@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TodoApp</string>
+    <string name="task_text">Сделать что-то</string>
+
+    <string name="save">Сохранить</string>
+    <string name="my_tasks">Мои дела</string>
+    <string name="done">Выполнено - </string>
+</resources>

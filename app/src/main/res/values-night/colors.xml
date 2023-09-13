@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Support-->
+    <color name="support.separator">#33FFFFFF</color>
+    <color name="support.overlay">#52000000</color>
+
+    <!--Label-->
+    <color name="label.primary">#FFFFFF</color>
+    <color name="label.secondary">#99FFFFFF</color>
+    <color name="label.tertiary">#66FFFFFF</color>
+    <color name="label.disable">#26FFFFFF</color>
+
+    <!--Color-->
+    <color name="red">#FF453A</color>
+    <color name="green">#32D74B</color>
+    <color name="blue">#0A84FF</color>
+    <color name="gray">#8E8E93</color>
+    <color name="gray_light">#48484A</color>
+    <color name="white">#FFFFFF</color>
+
+    <!--Back-->
+    <color name="back.primary">#161618</color>
+    <color name="back.secondary">#252528</color>
+    <color name="back.elevated">#3C3C3F</color>
+</resources>

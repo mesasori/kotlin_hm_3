@@ -1,0 +1,27 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.TodoApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">@color/label.primary</item>
+        <item name="colorPrimaryVariant">@color/label.secondary</item>
+        <item name="colorOnPrimary">@color/label.primary</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/label.secondary</item>
+        <item name="colorSecondaryVariant">@color/label.secondary</item>
+        <item name="colorOnSecondary">@color/label.secondary</item>
+        <!-- Status bar color. -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@color/back.primary</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <style name="TextAppearance_TaskView">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/label.primary</item>
+    </style>
+
+
+
+
+</resources>
