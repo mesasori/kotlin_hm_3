@@ -29,11 +29,11 @@ class TasksDividerItemDecoration(
 
         parent.adapter?.let { adapter ->
             outRect.bottom =
-                if (position == adapter.itemCount - 1) 6
+                if (position == adapter.itemCount - 1) bottomOffset // Here you can paste own offsets
                 else bottomOffset
 
             outRect.top =
-                if (position == 0) 6
+                if (position == 0) topOffset // Here you can paste own offsets
                 else topOffset
 
             outRect.left = leftOffset
