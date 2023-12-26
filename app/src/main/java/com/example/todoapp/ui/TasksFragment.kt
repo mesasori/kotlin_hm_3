@@ -12,6 +12,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -26,17 +27,21 @@ import com.example.todoapp.utils.TasksDividerItemDecoration
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class TasksFragment : Fragment() {
 
     private lateinit var binding: FragmentTasksBinding
     private lateinit var adapter: TasksAdapter
-    private val model: MainViewModel by activityViewModels()
+    //private lateinit var model: MainViewModel
+    private val model by lazy { MainViewModel(requireContext()) }
     private var filtered = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = FragmentTasksBinding.inflate(layoutInflater)
+        //model = lazy {MainViewModel(requireContext())}
     }
 
     override fun onCreateView(
@@ -52,22 +57,6 @@ class TasksFragment : Fragment() {
     }
 
     private fun setUpViewModel() {
-        model.getList(false)
-
-        model.numberOfDone.observe(viewLifecycleOwner, Observer {
-            binding.numberDone.text = "${resources.getText(R.string.done)} $it"
-        })
-
-        model.list.observe(viewLifecycleOwner, Observer {
-            adapter.setData(it)
-        })
-    }
-
-    private fun setupViews() {
-        binding.btnNewTask.setOnClickListener {
-            Navigation.findNavController(it).navigate(R.id.action_tasksFragment_to_newTaskFragment)
-        }
-
         adapter = TasksAdapter(object : TasksAdapter.OwnItemClickListener {
             override fun onItemClick(task: Task) {
                 val bundle = Bundle()
@@ -77,10 +66,36 @@ class TasksFragment : Fragment() {
 
             override fun onCheckClick(task: Task) {
                 task.done = !task.done
-                model.updateItem(task)
+                lifecycleScope.launch {
+                    model.updateItem(task)
+                }
             }
 
         })
+
+        lifecycleScope.launch {
+            model.getList(false)
+        }
+
+        lifecycleScope.launch {
+            model.list.collect {
+                adapter.setData(it)
+            }
+        }
+
+        lifecycleScope.launch {
+            model.numberOfDone.collect {
+                binding.numberDone.text = "${resources.getText(R.string.done)} $it"
+            }
+        }
+
+    }
+
+    private fun setupViews() {
+        binding.btnNewTask.setOnClickListener {
+            Navigation.findNavController(it).navigate(R.id.action_tasksFragment_to_newTaskFragment)
+        }
+
         binding.recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.recyclerView.adapter = adapter
         binding.recyclerView.addItemDecoration(TasksDividerItemDecoration(
@@ -91,11 +106,15 @@ class TasksFragment : Fragment() {
 
         binding.btnTasksVisibility.setOnClickListener {
             if (!filtered) {
-                model.getList(true)
+                lifecycleScope.launch {
+                    model.getList(true)
+                }
                 binding.btnTasksVisibility.setImageDrawable(AppCompatResources.getDrawable(requireContext(), R.drawable.round_add_task_24))
                 filtered = true
             } else {
-                model.getList(false)
+                lifecycleScope.launch {
+                    model.getList(false)
+                }
                 binding.btnTasksVisibility.setImageDrawable(AppCompatResources.getDrawable(requireContext(), R.drawable.baseline_visibility_24))
                 filtered = false
             }

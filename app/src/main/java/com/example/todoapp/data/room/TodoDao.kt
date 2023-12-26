@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TodoDao {
     @Query("SELECT * FROM todoList")
-    fun getAllFlow(): Flow<List<TodoEntity>>
+    suspend fun getAllFlow(): List<TodoEntity>
 
     @Query("SELECT * FROM todoList")
     suspend fun getAll(): List<TodoEntity>
@@ -20,7 +20,7 @@ interface TodoDao {
     suspend fun getItem(id: String): TodoEntity
 
     @Query("SELECT * FROM todoList WHERE is_done=1")
-    fun getDoneAll(): Flow<List<TodoEntity>>
+    suspend fun getDoneAll(): List<TodoEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(todoEntity: TodoEntity)

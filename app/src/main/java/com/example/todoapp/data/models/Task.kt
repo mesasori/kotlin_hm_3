@@ -1,5 +1,6 @@
 package com.example.todoapp.data.models
 
+import com.example.todoapp.data.room.TodoEntity
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -27,6 +28,9 @@ data class Task(
         return false
     }
 
+    fun fromTaskToEntity(): TodoEntity = TodoEntity(
+        id, description, urgency, done, dateCreation, deadline, dateChanged
+    )
 
     companion object {
         fun deadlineToString(deadline: Long?): String? {

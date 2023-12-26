@@ -1,56 +1,76 @@
 package com.example.todoapp.ui
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.todoapp.data.models.Task
 import com.example.todoapp.data.repository.Repository
+import com.example.todoapp.data.room.TodoDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-class MainViewModel: ViewModel() {
-    private val repository = Repository()
+class MainViewModel(
+    context: Context
+): ViewModel() {
     private var showAll = true
+    private val repository: Repository = Repository(TodoDatabase.create(context))
 
-    val numberOfDone: MutableLiveData<Int> by lazy {
-        MutableLiveData<Int>()
+
+    private var _numberOfDone = MutableStateFlow(0)
+    var numberOfDone = _numberOfDone.asStateFlow()
+    private var lastId = -1
+
+    private val _list = MutableStateFlow<List<Task>>(listOf())
+    val list = _list.asStateFlow()
+
+
+    fun getLastId(): Int {
+        for (i in list.value) lastId = maxOf(lastId, i.id)
+        lastId++
+        return lastId
     }
-
-    val list: MutableLiveData<List<Task>> by lazy {
-        MutableLiveData<List<Task>>()
-    }
-
-    private var lastId: Int = 0
-
-    fun getLastId() = lastId
 
     init {
-        list.value = repository.getData()
-        numberOfDone.value = repository.getNumDone()
+        getList(false)
     }
 
     fun getList(mode: Boolean) {
-        showAll = !mode
-
-        when (showAll) {
-            true -> list.postValue(repository.getData())
-            false -> list.postValue(repository.getData().filter { it.done })
+        viewModelScope.launch(Dispatchers.IO) {
+            showAll = !mode
+            when (showAll) {
+                true -> _list.value = repository.getData()
+                false -> _list.value = repository.getDoneData()
+            }
+            _numberOfDone.value = repository.getNumDone()
         }
-
-        numberOfDone.postValue(repository.getNumDone())
-        lastId = repository.getLastId()
     }
 
     fun addItem(task: Task) {
-        repository.add(task)
-        getList(false)
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.add(task)
+            getList(false)
+        }
+
     }
 
     fun updateItem(task: Task) {
-        repository.update(task)
-        getList(false)
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.update(task)
+            getList(false)
+        }
+
     }
 
     fun deleteItem(task: Task) {
-        repository.delete(task)
-        getList(false)
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.delete(task)
+            getList(false)
+        }
+
     }
 
 }

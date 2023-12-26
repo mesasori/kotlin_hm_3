@@ -16,4 +16,7 @@
     <string name="delete_task">Can\'t delete uncreated task</string>
 
     <string name="empty_description">Can\'t save task with empty description</string>
+    <string name="urgency">Urgency</string>
+    <string name="deadline">Deadline</string>
+    <string name="delete">Delete</string>
 </resources>

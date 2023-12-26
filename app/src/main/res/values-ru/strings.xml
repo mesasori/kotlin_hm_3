@@ -16,4 +16,7 @@
 
     <string name="delete_task">Нельзя удалить еще не созданную задачу</string>
     <string name="empty_description">Нельзя сохранить задачу с пустым описанием</string>
+    <string name="urgency">Важность</string>
+    <string name="deadline">Сделать до</string>
+    <string name="delete">Удалить</string>
 </resources>

@@ -3,52 +3,45 @@ package com.example.todoapp.data.repository
 import android.util.Log
 import com.example.todoapp.data.models.Task
 import com.example.todoapp.data.models.Urgency
+import com.example.todoapp.data.room.TodoDatabase
 import com.google.gson.Gson
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlin.random.Random
 
-class Repository {
-    //private val dao =
-    private val tasks = mutableListOf<Task>()
-    private var lastId = 0
+class Repository(db: TodoDatabase) {
 
-    init {
-        val count = Random.nextInt(5, 30)
-        for (i in 0..count) {
-            val urgency = Urgency.values()[Random.nextInt(0, 3)]
-            val done = if (i % 2 == 0) Random.nextBoolean() else false
-            val deadline = if (i % 2 == 1 && Random.nextBoolean()) 1628190449342 else null
-            tasks.add(Task(id = i, description = "Random description", urgency = urgency,
-                dateCreation = "18:09, 25 December", done = done, deadline = deadline, dateChanged = null))
-            lastId = i + 1
+    private val dao = db.listDao
+    private var lastId = -1
+
+    suspend fun getData(): List<Task> {
+        val list = dao.getAllFlow().map { it.fromEntity() }
+        if (lastId == -1) {
+            for (i in list) lastId = maxOf(lastId, i.id)
+            lastId++
         }
+        return list
     }
 
-    fun getLastId() = lastId
 
-    fun getData(): List<Task> {
-        Log.d("Tasks", Gson().toJson(tasks))
-        return tasks
+    suspend fun getDoneData(): List<Task> =
+        dao.getDoneAll().map { it.fromEntity() }
+
+
+    suspend fun getNumDone(): Int {
+        return dao.getDoneAll().size
     }
 
-    fun getNumDone(): Int {
-        return tasks.filter { it.done }.size
+    suspend fun update(newTask: Task) {
+        dao.update(newTask.fromTaskToEntity())
     }
 
-    fun update(newTask: Task) {
-        for (i in tasks.indices) {
-            if (tasks[i].id == newTask.id) {
-                tasks[i] = newTask
-                break
-            }
-        }
+    suspend fun add(task: Task) {
+        lastId = task.id + 1
+        dao.insert(task.fromTaskToEntity())
     }
 
-    fun delete(task: Task) {
-        tasks.remove(task)
-    }
-
-    fun add(task: Task) {
-        tasks.add(task)
-        lastId++
+    suspend fun delete(task: Task) {
+        dao.delete(task.fromTaskToEntity())
     }
 }

@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -16,20 +17,22 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.get
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.todoapp.R
 import com.example.todoapp.data.models.Task
 import com.example.todoapp.data.models.Urgency
 import com.example.todoapp.databinding.FragmentNewTaskBinding
 import com.google.gson.Gson
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class NewTaskFragment : Fragment() {
     private lateinit var binding: FragmentNewTaskBinding
-    private val model: MainViewModel by activityViewModels()
+    private val model by lazy { MainViewModel(requireContext()) }
 
     private var task: Task? = null
-    private lateinit var newUrgency: Urgency
+    private var newUrgency: Urgency = Urgency.NONE
     private var newDeadline: Long? = null
     private var newDescription: String? = null
 
@@ -63,10 +66,16 @@ class NewTaskFragment : Fragment() {
     ): View {
         val root = binding.root
 
+        return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        lifecycleScope.launch {
+            model.getList(false)
+        }
         createPopupMenu()
         setUpViews()
-
-        return root
     }
 
     private fun setUpViews() {
@@ -165,7 +174,9 @@ class NewTaskFragment : Fragment() {
 
         binding.tvDelete.setOnClickListener {
             if (task != null) {
-                model.deleteItem(task!!)
+                lifecycleScope.launch {
+                    model.deleteItem(task!!)
+                }
                 findNavController().navigate(R.id.action_newTaskFragment_to_tasksFragment)
             }
             else Toast.makeText(context, resources.getText(R.string.delete_task), Toast.LENGTH_SHORT).show()
@@ -182,12 +193,16 @@ class NewTaskFragment : Fragment() {
     private fun saveTask() {
         if (binding.editTodo.text.toString() == "") Toast.makeText(context, resources.getText(R.string.empty_description), Toast.LENGTH_SHORT).show()
         else {
-            val newTask = Task(
-                model.getLastId(), binding.editTodo.text.toString(),
-                newUrgency, false, Calendar.getInstance().time.toString(), newDeadline, null
-            )
-            model.addItem(newTask)
+            lifecycleScope.launch {
+                val newTask = Task(
+                    model.getLastId(), binding.editTodo.text.toString(),
+                    newUrgency, false, Calendar.getInstance().time.toString(), newDeadline, null
+                )
+                model.addItem(newTask)
+                Log.d("NEW_TASK", newTask.id.toString())
+            }
             findNavController().navigate(R.id.action_newTaskFragment_to_tasksFragment)
+
         }
     }
 
@@ -200,7 +215,10 @@ class NewTaskFragment : Fragment() {
                 it.description = binding.editTodo.text.toString()
                 it.dateChanged = Calendar.getInstance().time.toString()
             }
-            model.updateItem(task!!)
+            lifecycleScope.launch {
+                model.updateItem(task!!)
+            }
+
             findNavController().navigate(R.id.action_newTaskFragment_to_tasksFragment)
         }
     }
