@@ -12,4 +12,8 @@
     <string name="low">Low</string>
     <string name="none">None</string>
     <string name="high">High</string>
+
+    <string name="delete_task">Can\'t delete uncreated task</string>
+
+    <string name="empty_description">Can\'t save task with empty description</string>
 </resources>

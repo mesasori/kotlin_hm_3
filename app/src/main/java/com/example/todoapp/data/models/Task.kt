@@ -1,15 +1,17 @@
 package com.example.todoapp.data.models
 
 import com.google.gson.Gson
+import java.text.SimpleDateFormat
+import java.util.Date
 
 data class Task(
     val id: Int,
     var description: String,
     var urgency: Urgency,
     var done: Boolean,
-    val dataCreation: String,
-    var deadline: String?,
-    var dataChanged: String?
+    val dateCreation: String,
+    var deadline: Long?,
+    var dateChanged: String?
 ) {
 
     override fun toString(): String {
@@ -20,9 +22,20 @@ data class Task(
         if (other is Task) {
             return id == other.id && description == other.description &&
                     urgency == other.urgency && deadline == other.deadline &&
-                    done == other.done && dataCreation == other.dataCreation && dataChanged == other.dataChanged
+                    done == other.done && dateCreation == other.dateCreation && dateChanged == other.dateChanged
         }
         return false
+    }
+
+
+    companion object {
+        fun deadlineToString(deadline: Long?): String? {
+            if(deadline != null) {
+                val date = Date(deadline)
+                return SimpleDateFormat("dd MMMM YYYY").format(date)
+            }
+            return null
+        }
     }
 }
 

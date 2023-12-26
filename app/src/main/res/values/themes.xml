@@ -32,5 +32,21 @@
         <item name="android:colorForeground">@color/support.overlay</item>
     </style>
 
+    <style name="DatePickerStyle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/blue</item>
+        <item name="colorSecondary">@color/blue</item>
+        <item name="colorControlActivated">@color/blue</item>
+        <item name="colorControlHighlight">@color/blue</item>
+        <item name="android:windowBackground">@color/back.secondary</item> <item name="android:textColor">@color/white</item>
+        <item name="android:colorPrimary">@color/blue</item>
+        <item name="android:textColorSecondary">@color/label.tertiary</item> <item name="android:textColorPrimary">@color/label.primary</item>
+        <item name="android:textColorPrimaryInverse">@color/white</item>
+        <item name="android:textColorSecondaryInverse">@color/white</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/DatePickerTheme.ButtonBarButton </item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/DatePickerTheme.ButtonBarButton </item>
+    </style>
+    <style name="DatePickerTheme.ButtonBarButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog"> <item name="android:textColor">@color/blue</item>
+    </style>
+
     
 </resources>

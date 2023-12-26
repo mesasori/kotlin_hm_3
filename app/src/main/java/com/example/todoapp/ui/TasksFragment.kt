@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -31,6 +32,7 @@ class TasksFragment : Fragment() {
     private lateinit var binding: FragmentTasksBinding
     private lateinit var adapter: TasksAdapter
     private val model: MainViewModel by activityViewModels()
+    private var filtered = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,6 +88,18 @@ class TasksFragment : Fragment() {
             bottomOffset = 6f.toPx.toInt(),
             topOffset = 6f.toPx.toInt()
         ))
+
+        binding.btnTasksVisibility.setOnClickListener {
+            if (!filtered) {
+                model.getList(true)
+                binding.btnTasksVisibility.setImageDrawable(AppCompatResources.getDrawable(requireContext(), R.drawable.round_add_task_24))
+                filtered = true
+            } else {
+                model.getList(false)
+                binding.btnTasksVisibility.setImageDrawable(AppCompatResources.getDrawable(requireContext(), R.drawable.baseline_visibility_24))
+                filtered = false
+            }
+        }
 
 
     }

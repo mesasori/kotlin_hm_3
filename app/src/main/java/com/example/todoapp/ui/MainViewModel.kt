@@ -17,13 +17,17 @@ class MainViewModel: ViewModel() {
         MutableLiveData<List<Task>>()
     }
 
+    private var lastId: Int = 0
+
+    fun getLastId() = lastId
+
     init {
         list.value = repository.getData()
         numberOfDone.value = repository.getNumDone()
     }
 
     fun getList(mode: Boolean) {
-        if (mode) showAll = !showAll
+        showAll = !mode
 
         when (showAll) {
             true -> list.postValue(repository.getData())
@@ -31,6 +35,7 @@ class MainViewModel: ViewModel() {
         }
 
         numberOfDone.postValue(repository.getNumDone())
+        lastId = repository.getLastId()
     }
 
     fun addItem(task: Task) {
@@ -40,6 +45,11 @@ class MainViewModel: ViewModel() {
 
     fun updateItem(task: Task) {
         repository.update(task)
+        getList(false)
+    }
+
+    fun deleteItem(task: Task) {
+        repository.delete(task)
         getList(false)
     }
 

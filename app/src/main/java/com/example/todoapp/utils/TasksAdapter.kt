@@ -5,7 +5,6 @@ import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView.OnItemClickListener
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
@@ -51,7 +50,7 @@ class TasksAdapter(
 
             //Deadline
             if (task.deadline != null) {
-                taskDeadline.text = task.deadline.toString()
+                taskDeadline.text = Task.deadlineToString(task.deadline)
                 taskDeadline.visibility = View.VISIBLE
             } else taskDeadline.visibility = View.GONE
 
@@ -71,7 +70,7 @@ class TasksAdapter(
             }
 
             taskInfo.setOnClickListener {
-                Toast.makeText(context, "Creation date: " + task.dataCreation, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Creation date: " + task.dateCreation, Toast.LENGTH_SHORT).show()
             }
 
             itemView.setOnClickListener {

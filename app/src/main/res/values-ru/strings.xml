@@ -13,4 +13,7 @@
     <string name="low">Низкая</string>
     <string name="none">Нет</string>
     <string name="high">Высокая</string>
+
+    <string name="delete_task">Нельзя удалить еще не созданную задачу</string>
+    <string name="empty_description">Нельзя сохранить задачу с пустым описанием</string>
 </resources>

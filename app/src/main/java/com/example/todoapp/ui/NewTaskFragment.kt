@@ -4,15 +4,13 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.MenuItem
-import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
@@ -24,12 +22,16 @@ import com.example.todoapp.data.models.Task
 import com.example.todoapp.data.models.Urgency
 import com.example.todoapp.databinding.FragmentNewTaskBinding
 import com.google.gson.Gson
+import java.util.Calendar
 
 class NewTaskFragment : Fragment() {
     private lateinit var binding: FragmentNewTaskBinding
     private val model: MainViewModel by activityViewModels()
+
     private var task: Task? = null
-    private var newUrgency = Urgency.NONE
+    private lateinit var newUrgency: Urgency
+    private var newDeadline: Long? = null
+    private var newDescription: String? = null
 
     private lateinit var popupMenu : PopupMenu
     private lateinit var timePickerDialog : DatePickerDialog
@@ -41,10 +43,17 @@ class NewTaskFragment : Fragment() {
 
         arguments?.let {
             val taskJSON = it.getString(TasksFragment.BUNDLE_KEY)
-            if (taskJSON != null) task = Gson().fromJson(taskJSON, Task::class.java)
+            if (taskJSON != null) {
+                task = Gson().fromJson(taskJSON, Task::class.java)
+                newUrgency = task!!.urgency
+                newDeadline = task!!.deadline
+                newDescription = task!!.description
+            } else {
+                newUrgency = Urgency.NONE
+                newDeadline = null
+                newDescription = null
+            }
         }
-
-        Log.d("BUNDLE", task.toString())
 
     }
 
@@ -61,9 +70,23 @@ class NewTaskFragment : Fragment() {
     }
 
     private fun setUpViews() {
+        val myCalendar = Calendar.getInstance()
+        timePickerDialog = DatePickerDialog(requireContext(),
+            R.style.DatePickerStyle,
+            { view, year, month, day ->
+                binding.tvDate.visibility = View.VISIBLE
+                myCalendar.set(Calendar.YEAR, year)
+                myCalendar.set(Calendar.MONTH, month)
+                myCalendar.set(Calendar.DAY_OF_MONTH, day)
+                newDeadline = myCalendar.timeInMillis
+                binding.tvDate.text = Task.deadlineToString(newDeadline)
+            }, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH))
+
         if (task == null) {
             binding.tvDate.visibility = View.GONE
             binding.tvDelete.setTextColor(resources.getColor(R.color.label_disable))
+            binding.editTodo.setTextColor(AppCompatResources.getColorStateList(requireContext(),
+                R.color.label_primary))
         }
         else taskView()
 
@@ -99,10 +122,18 @@ class NewTaskFragment : Fragment() {
             }
         }
 
-        if (task!!.deadline != null) {
-            binding.tvDate.text = task!!.deadline
-            binding.switchCompat.performClick()
+
+
+        timePickerDialog.setOnCancelListener {
+            if(binding.tvDate.visibility == View.GONE){
+                binding.switchCompat.isChecked = false
+            }
         }
+
+        if (task!!.deadline != null) {
+            binding.tvDate.text = Task.deadlineToString(task!!.deadline)
+            binding.switchCompat.isChecked = true
+        } else binding.tvDate.visibility = View.GONE
     }
 
     private fun setUpListeners() {
@@ -110,22 +141,68 @@ class NewTaskFragment : Fragment() {
             findNavController().navigate(R.id.action_newTaskFragment_to_tasksFragment)
         }
 
-        binding.toolbar.menu[0].setOnMenuItemClickListener(MenuItem.OnMenuItemClickListener {
-            if (task == null) saveNewTask()
+        binding.toolbar.menu[0].setOnMenuItemClickListener {
+            if (task == null) saveTask()
             else updateTask()
-        })
+            true
+        }
 
         binding.chooseImportance.setOnClickListener {
             popupMenu.show()
         }
+
+        binding.chooseDate.setOnClickListener {
+            openDatePicker()
+        }
+
+        binding.switchCompat.setOnCheckedChangeListener { compoundButton, checked ->
+            if (checked) openDatePicker()
+            else {
+                binding.tvDate.visibility = View.GONE
+                newDeadline = null
+            }
+        }
+
+        binding.tvDelete.setOnClickListener {
+            if (task != null) {
+                model.deleteItem(task!!)
+                findNavController().navigate(R.id.action_newTaskFragment_to_tasksFragment)
+            }
+            else Toast.makeText(context, resources.getText(R.string.delete_task), Toast.LENGTH_SHORT).show()
+
+
+        }
     }
 
-    private fun saveNewTask() {
-        //TODO
+    private fun openDatePicker() {
+        binding.switchCompat.isChecked = true
+        timePickerDialog.show()
+    }
+
+    private fun saveTask() {
+        if (binding.editTodo.text.toString() == "") Toast.makeText(context, resources.getText(R.string.empty_description), Toast.LENGTH_SHORT).show()
+        else {
+            val newTask = Task(
+                model.getLastId(), binding.editTodo.text.toString(),
+                newUrgency, false, Calendar.getInstance().time.toString(), newDeadline, null
+            )
+            model.addItem(newTask)
+            findNavController().navigate(R.id.action_newTaskFragment_to_tasksFragment)
+        }
     }
 
     private fun updateTask() {
-        //TODO
+        if (binding.editTodo.text.toString() == "") Toast.makeText(context, resources.getText(R.string.empty_description), Toast.LENGTH_SHORT).show()
+        else {
+            task!!.let {
+                it.urgency = newUrgency
+                it.deadline = newDeadline
+                it.description = binding.editTodo.text.toString()
+                it.dateChanged = Calendar.getInstance().time.toString()
+            }
+            model.updateItem(task!!)
+            findNavController().navigate(R.id.action_newTaskFragment_to_tasksFragment)
+        }
     }
 
     private fun createPopupMenu() {
