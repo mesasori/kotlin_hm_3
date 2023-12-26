@@ -6,4 +6,11 @@
     <string name="save">Сохранить</string>
     <string name="my_tasks">Мои дела</string>
     <string name="done">Выполнено - </string>
+    <string name="undo">Отменить</string>
+
+    <string name="should_todo">Что мне нужно сделать...</string>
+
+    <string name="low">Низкая</string>
+    <string name="none">Нет</string>
+    <string name="high">Высокая</string>
 </resources>

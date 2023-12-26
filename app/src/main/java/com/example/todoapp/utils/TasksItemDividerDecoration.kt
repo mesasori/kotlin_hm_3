@@ -54,6 +54,7 @@ class TasksDividerItemDecoration(
             mDivider.setBounds(left, top, right, bottom)
             mDivider.draw(c)
         }
+
         c.restore()
     }
 

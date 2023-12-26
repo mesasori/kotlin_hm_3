@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/back.secondary">
+    android:background="#00FFFFFF">
 
     <CheckBox
         android:id="@+id/task_checkBox"
@@ -50,7 +50,8 @@
             android:id="@+id/iv_taskUrgency"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:visibility="gone"
+            android:layout_marginTop="1dp"
+            android:visibility="visible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -61,8 +62,8 @@
             android:ellipsize="end"
             android:fontFamily="@font/regular"
             android:maxLines="3"
-            android:layout_marginStart="3dp"
             android:lineSpacingExtra="1sp"
+            android:layout_marginStart="1dp"
             android:text="Купить что-то"
             android:textColor="@color/label.primary"
             android:textSize="16sp"
@@ -79,7 +80,7 @@
             android:lineSpacingExtra="1sp"
             android:textColor="@color/label.tertiary"
             android:textSize="14sp"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_marginTop="4dp"
             app:layout_constraintStart_toStartOf="@+id/tv_taskDescription"
             app:layout_constraintTop_toBottomOf="@+id/tv_taskDescription" />

@@ -5,6 +5,7 @@ import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView.OnItemClickListener
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
@@ -14,21 +15,25 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp.R
-import com.example.todoapp.data.models.TaskItem
+import com.example.todoapp.data.models.Task
 import com.example.todoapp.data.models.Urgency
 
-class TasksAdapter: RecyclerView.Adapter<TasksAdapter.ViewHolder>() {
+class TasksAdapter(
+    val onItemListener: OwnItemClickListener
+): RecyclerView.Adapter<TasksAdapter.ViewHolder>() {
 
-    var tasks = listOf<TaskItem>()
-        set(value) {
-            val callback = DiffUtilCallbackImpl(
-                oldItems = field,
-                newItems = value
-            )
-            field = value
-            val result = DiffUtil.calculateDiff(callback)
-            result.dispatchUpdatesTo(this)
-        }
+    var mTaskList = mutableListOf<Task>()
+
+    fun setData(data: List<Task>) {
+        val callback = DiffUtilCallbackImpl(
+            oldItems = mTaskList,
+            newItems = data
+        )
+        val diffResult = DiffUtil.calculateDiff(callback)
+        mTaskList.clear()
+        mTaskList.addAll(data)
+        diffResult.dispatchUpdatesTo(this)
+    }
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         private val checkBox: CheckBox = itemView.findViewById(R.id.task_checkBox)
@@ -37,9 +42,9 @@ class TasksAdapter: RecyclerView.Adapter<TasksAdapter.ViewHolder>() {
         private val taskDescription: TextView = itemView.findViewById(R.id.tv_taskDescription)
         private val taskDeadline: TextView = itemView.findViewById(R.id.tv_taskDeadline)
 
-        fun onBind(task: TaskItem, position: Int) {
+        fun onBind(task: Task, position: Int) {
             if (position == 0) itemView.background = ResourcesCompat.getDrawable(itemView.resources, R.drawable.rounded_top_task, null)
-            if (position == tasks.size - 1) itemView.background = ResourcesCompat.getDrawable(itemView.resources, R.drawable.rounded_bottom_task, null)
+            if (position == mTaskList.size - 1) itemView.background = ResourcesCompat.getDrawable(itemView.resources, R.drawable.rounded_bottom_task, null)
             //Description
             val context = itemView.context
             taskDescription.text = task.description
@@ -58,20 +63,19 @@ class TasksAdapter: RecyclerView.Adapter<TasksAdapter.ViewHolder>() {
 
             checkBox.setOnClickListener {
                 when(task.done) {
-                    true -> {
-                        taskNotDone(context, checkBox, taskUrgency, taskDescription, task)
-                        task.done = false
-                    }
+                    true -> taskNotDone(context, checkBox, taskUrgency, taskDescription, task)
 
-                    false -> {
-                        taskDone(context, checkBox, taskUrgency, taskDescription)
-                        task.done = true
-                    }
+                    false -> taskDone(context, checkBox, taskUrgency, taskDescription)
                 }
+                onItemListener.onCheckClick(task)
             }
 
             taskInfo.setOnClickListener {
                 Toast.makeText(context, "Creation date: " + task.dataCreation, Toast.LENGTH_SHORT).show()
+            }
+
+            itemView.setOnClickListener {
+                onItemListener.onItemClick(task)
             }
 
         }
@@ -88,10 +92,10 @@ class TasksAdapter: RecyclerView.Adapter<TasksAdapter.ViewHolder>() {
         )
     }
 
-    override fun getItemCount() = tasks.size
+    override fun getItemCount() = mTaskList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.onBind(tasks[position], position)
+        holder.onBind(mTaskList[position], position)
     }
 
     private fun taskDone(
@@ -119,7 +123,7 @@ class TasksAdapter: RecyclerView.Adapter<TasksAdapter.ViewHolder>() {
         checkBox: CheckBox,
         taskUrgency: ImageView,
         taskDescription: TextView,
-        task: TaskItem
+        task: Task
     ) {
         //Description state
         taskDescription.paintFlags = Paint.ANTI_ALIAS_FLAG
@@ -154,5 +158,10 @@ class TasksAdapter: RecyclerView.Adapter<TasksAdapter.ViewHolder>() {
                     R.color.red)
             }
         }
+    }
+    interface OwnItemClickListener {
+        fun onItemClick(task: Task)
+
+        fun onCheckClick(task: Task)
     }
 }

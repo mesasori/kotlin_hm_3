@@ -1,11 +1,11 @@
 package com.example.todoapp.utils
 
 import androidx.recyclerview.widget.DiffUtil
-import com.example.todoapp.data.models.TaskItem
+import com.example.todoapp.data.models.Task
 
 class DiffUtilCallbackImpl(
-    private val oldItems: List<TaskItem>,
-    private val newItems: List<TaskItem>
+    private val oldItems: List<Task>,
+    private val newItems: List<Task>
 ): DiffUtil.Callback() {
     override fun getOldListSize() = oldItems.size
 

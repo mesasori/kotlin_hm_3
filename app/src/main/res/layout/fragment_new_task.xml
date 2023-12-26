@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/back.primary"
     tools:context=".ui.NewTaskFragment">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -13,6 +14,7 @@
         android:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:menu="@menu/appbar"
@@ -20,5 +22,152 @@
             android:elevation="0dp"
             />
     </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp">
+            <EditText
+                android:id="@+id/edit_todo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:background="@drawable/recycler_view_tasks_background"
+                android:minLines="4"
+                android:layout_marginHorizontal="16dp"
+                android:textSize="16sp"
+                android:hint="@string/should_todo"
+                android:textColorHint="@color/label.tertiary"
+                android:textColor="@color/back.primary"
+                android:fontFamily="@font/regular"
+                android:gravity="top|start"
+                android:padding="16dp"
+                android:layout_marginTop="20dp"
+                android:elevation="1dp"
+                />
+
+            <LinearLayout
+                android:id="@+id/choose_importance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edit_todo"
+                android:layout_marginVertical="8dp"
+                android:paddingTop="20dp"
+                android:paddingHorizontal="20dp"
+                android:background="?android:attr/selectableItemBackground"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Важность"
+                    android:textColor="@color/label.primary"
+                    android:textSize="16sp"
+                    />
+                <TextView
+                    android:id="@+id/tv_urgency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Нет"
+                    android:textColor="@color/label.tertiary"
+                    android:textSize="14sp"
+                    />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/support.separator"
+                    android:layout_marginTop="16dp"
+
+                    />
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/choose_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="20dp"
+
+                android:background="?android:attr/selectableItemBackground"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/choose_importance">
+
+                <TextView
+                    android:id="@+id/date_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:fontFamily="@font/regular"
+                    android:text="Сделать до"
+                    android:textColor="@color/label.primary"
+                    android:textSize="16sp"
+                    android:layout_marginTop="20dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="27 декабря"
+                    android:textColor="@color/blue"
+                    android:textSize="14sp"
+
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/date_title" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_compat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/MySwitch"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="25dp"
+                    android:background="@color/support.separator"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_date" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <TextView
+                android:id="@+id/tv_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/regular"
+                android:text="Удалить"
+                android:textColor="@color/label.disable"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical"
+                app:drawableStartCompat="@drawable/round_delete_24"
+                app:drawableTint="@color/label.disable"
+                android:drawablePadding="12dp"
+                app:layout_constraintTop_toBottomOf="@+id/choose_date"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:padding="5dp"
+                android:background="?android:attr/selectableItemBackground"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

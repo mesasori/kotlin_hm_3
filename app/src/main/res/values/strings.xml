@@ -5,4 +5,11 @@
     <string name="save">Save</string>
     <string name="my_tasks">My tasks</string>
     <string name="done">Done - </string>
+    <string name="undo">Undo</string>
+
+    <string name="should_todo">What should I do...</string>
+
+    <string name="low">Low</string>
+    <string name="none">None</string>
+    <string name="high">High</string>
 </resources>
